@@ -27,16 +27,16 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@permaweb/aoconnect": "^0.0.51",
-    "@types/jest": "^29.5.12",
-    "@types/node": "^20.12.6",
-    "arweave": "^1.15.0",
+    "@permaweb/aoconnect": "^0.0.62",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.10.1",
+    "arweave": "^1.15.5",
     "jest": "^29.7.0",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.4",
-    "vite": "^5.1.4",
-    "vite-plugin-dts": "^3.8.1"
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3",
+    "vite-plugin-dts": "^4.3.0"
   },
   "peerDependencies": {
     "@permaweb/aoconnect": ">= 0.0.51 < 1"

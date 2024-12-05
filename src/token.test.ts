@@ -1,4 +1,4 @@
-import { createDataItemSigner } from "@permaweb/aoconnect";
+import { connect, createDataItemSigner } from "@permaweb/aoconnect";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Token, { type TokenInstance } from "./Token";
 import Quantity from "./Quantity";
@@ -11,12 +11,16 @@ describe("Token testing", () => {
 
   beforeAll(async () => {
     const arweave = new Arweave({
-      host: "arweave.net",
-      port: 443,
-      protocol: "https"
+      host: "foo.com", // dummy host since we aren't actually connecting to a node
     });
     wallet = await arweave.wallets.generate();
-    token = await Token(tokenID, createDataItemSigner(wallet));
+    token = await Token(
+      tokenID,
+      createDataItemSigner(wallet),
+      connect({
+        CU_URL: "https://cu135.ao-testnet.xyz",
+      })
+    );
   }, 12000);
 
   test("Load token", () => {

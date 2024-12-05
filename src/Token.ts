@@ -1,5 +1,13 @@
-
-import { AoInstance, TokenInfo, Id, Owner, getTagValue, Message, Balances, isAddress } from "./utils";
+import {
+  AoInstance,
+  TokenInfo,
+  Id,
+  Owner,
+  getTagValue,
+  Message,
+  Balances,
+  isAddress,
+} from "./utils";
 import { connect, createDataItemSigner } from "@permaweb/aoconnect";
 import Quantity from "./Quantity";
 
@@ -10,12 +18,13 @@ export default async function Token(
   ao = connect()
 ) {
   // query ao
-  const res = await ao.dryrun({
-    Id,
-    Owner,
-    process: id,
+  const res = await ao
+    .dryrun({
+      Id,
+      Owner,
+      process: id,
     tags: [{ name: "Action", value: "Info" }]
-  });
+    });
 
   // find message with token info
   for (const msg of res.Messages as Message[]) {
@@ -26,14 +35,14 @@ export default async function Token(
 
     if (!Ticker && !Name) continue;
 
-    // if the message was found, return the token details  
+    // if the message was found, return the token details
     return new TokenInstance(
       id,
       {
         Name,
         Ticker,
         Denomination: BigInt(Denomination || 0),
-        Logo
+        Logo,
       },
       signer,
       ao
@@ -60,7 +69,12 @@ export class TokenInstance {
    * @param id Token process ID
    * @param info Optional loaded token info
    */
-  constructor(id: string, info: TokenInfo, signer: ReturnType<typeof createDataItemSigner>, ao: AoInstance) {
+  constructor(
+    id: string,
+    info: TokenInfo,
+    signer: ReturnType<typeof createDataItemSigner>,
+    ao: AoInstance
+  ) {
     this.#id = id;
     this.#info = info;
     this.#ao = ao;
@@ -86,10 +100,7 @@ export class TokenInstance {
    * will have the token's denomination defined by default.
    */
   get Quantity() {
-    return new Quantity(
-      0n,
-      this.info.Denomination
-    );
+    return new Quantity(0n, this.info.Denomination);
   }
 
   /**
@@ -103,22 +114,19 @@ export class TokenInstance {
       Id,
       Owner: address,
       process: this.#id,
-      tags: [{ name: "Action", value: "Balance" }]
+      tags: [{ name: "Action", value: "Balance" }],
     });
-  
+
     // find result message
     for (const msg of res.Messages as Message[]) {
       const balance = getTagValue("Balance", msg.Tags);
 
       // return balance if found
       if (balance) {
-        return new Quantity(
-          BigInt(balance),
-          this.#info.Denomination
-        );
+        return new Quantity(BigInt(balance), this.#info.Denomination);
       }
     }
-  
+
     // default return
     return new Quantity(0, this.#info.Denomination);
   }
@@ -133,23 +141,20 @@ export class TokenInstance {
       Id,
       Owner,
       process: this.#id,
-      tags: [{ name: "Action", value: "Balances" }]
+      tags: [{ name: "Action", value: "Balances" }],
     });
     const bals: Balances = {};
-      
+
     // find result message
-    for (const msg of res.Messages as Message[]) {      
+    for (const msg of res.Messages as Message[]) {
       // return balance if found
-      if (msg.Target !== Owner|| !msg.Data) continue;
-      
+      if (msg.Target !== Owner || !msg.Data) continue;
+
       try {
         const raw = JSON.parse(msg.Data);
 
         for (const addr in raw) {
-          bals[addr] = new Quantity(
-            BigInt(raw[addr]),
-            this.#info.Denomination
-          );
+          bals[addr] = new Quantity(BigInt(raw[addr]), this.#info.Denomination);
         }
       } catch {}
     }
@@ -180,8 +185,8 @@ export class TokenInstance {
       tags: [
         { name: "Action", value: "Transfer" },
         { name: "Recipient", value: recipient },
-        { name: "Quantity", value: quantity.raw.toString() }
-      ]
+        { name: "Quantity", value: quantity.raw.toString() },
+      ],
     });
   }
 }
